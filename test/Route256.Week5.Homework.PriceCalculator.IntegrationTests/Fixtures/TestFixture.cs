@@ -28,7 +28,7 @@ namespace Route256.Week5.Homework.PriceCalculator.IntegrationTests.Fixtures
                         .AddDalRepositories();
                 })
                 .Build();
-            
+
             ClearDatabase(host);
             host.MigrateUp();
 

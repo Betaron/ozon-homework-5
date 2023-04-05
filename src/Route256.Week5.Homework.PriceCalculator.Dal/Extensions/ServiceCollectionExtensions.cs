@@ -14,12 +14,12 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ICalculationRepository, CalculationRepository>();
         services.AddScoped<IGoodsRepository, GoodsRepository>();
-        
+
         return services;
     }
-    
+
     public static IServiceCollection AddDalInfrastructure(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         IConfigurationRoot config)
     {
         //read config
@@ -27,10 +27,10 @@ public static class ServiceCollectionExtensions
 
         //configure postrges types
         Postgres.MapCompositeTypes();
-        
+
         //add migrations
         Postgres.AddMigrations(services);
-        
+
         return services;
 
     }

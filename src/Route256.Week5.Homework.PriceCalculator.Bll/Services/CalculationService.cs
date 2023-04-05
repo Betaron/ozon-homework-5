@@ -21,7 +21,7 @@ public class CalculationService : ICalculationService
         _calculationRepository = calculationRepository;
         _goodsRepository = goodsRepository;
     }
-    
+
     public async Task<long> SaveCalculation(
         SaveCalculationModel data,
         CancellationToken cancellationToken)
@@ -36,7 +36,7 @@ public class CalculationService : ICalculationService
                 Width = x.Width
             })
             .ToArray();
-        
+
         var calculation = new CalculationEntityV1
         {
             UserId = data.UserId,
@@ -45,17 +45,17 @@ public class CalculationService : ICalculationService
             Price = data.Price,
             At = DateTimeOffset.UtcNow
         };
-        
+
         using var transaction = _calculationRepository.CreateTransactionScope();
         var goodIds = await _goodsRepository.Add(goods, cancellationToken);
 
-        calculation = calculation with {GoodIds = goodIds};
-        var calculationIds = await _calculationRepository.Add(new[] {calculation}, cancellationToken);
+        calculation = calculation with { GoodIds = goodIds };
+        var calculationIds = await _calculationRepository.Add(new[] { calculation }, cancellationToken);
         transaction.Complete();
 
         return calculationIds.Single();
     }
-    
+
     public decimal CalculatePriceByVolume(
         GoodModel[] goods,
         out double volume)
@@ -65,7 +65,7 @@ public class CalculationService : ICalculationService
 
         return (decimal)volume * VolumeToPriceRatio;
     }
-    
+
     public decimal CalculatePriceByWeight(
         GoodModel[] goods,
         out double weight)

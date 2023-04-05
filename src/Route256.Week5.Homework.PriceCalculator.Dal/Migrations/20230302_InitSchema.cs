@@ -14,7 +14,7 @@ public class InitSchema : Migration
             .WithColumn("height").AsDouble().NotNullable()
             .WithColumn("length").AsDouble().NotNullable()
             .WithColumn("weight").AsDouble().NotNullable();
-        
+
         Create.Table("calculations")
             .WithColumn("id").AsInt64().PrimaryKey("calculations_pk").Identity()
             .WithColumn("user_id").AsInt64().NotNullable()
@@ -27,7 +27,7 @@ public class InitSchema : Migration
         Create.Index("goods_user_id_index")
             .OnTable("goods")
             .OnColumn("user_id");
-        
+
         Create.Index("calculations_user_id_index")
             .OnTable("calculations")
             .OnColumn("user_id");

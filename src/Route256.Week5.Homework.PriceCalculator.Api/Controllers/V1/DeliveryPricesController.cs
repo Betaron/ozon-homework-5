@@ -19,7 +19,7 @@ public class DeliveryPricesController : ControllerBase
     {
         _mediator = mediator;
     }
-    
+
     /// <summary>
     /// Метод расчета стоимости доставки на основе объема товаров
     /// или веса товара. Окончательная стоимость принимается как наибольшая
@@ -40,13 +40,13 @@ public class DeliveryPricesController : ControllerBase
                     x.Weight))
                 .ToArray());
         var result = await _mediator.Send(command, ct);
-        
+
         return new CalculateResponse(
             result.CalculationId,
             result.Price);
     }
-    
-    
+
+
     /// <summary>
     /// Метод получения истории вычисления
     /// </summary>

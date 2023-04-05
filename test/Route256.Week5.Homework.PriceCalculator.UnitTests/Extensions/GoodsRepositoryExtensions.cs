@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading;
 using Moq;
 using Route256.Week5.Homework.PriceCalculator.Dal.Entities;
@@ -14,19 +14,19 @@ public static class GoodsRepositoryExtensions
         long[] ids)
     {
         repository.Setup(p =>
-                p.Add(It.IsAny<GoodEntityV1[]>(), 
+                p.Add(It.IsAny<GoodEntityV1[]>(),
                     It.IsAny<CancellationToken>()))
             .ReturnsAsync(ids);
 
         return repository;
     }
-    
+
     public static Mock<IGoodsRepository> SetupQueryGoods(
         this Mock<IGoodsRepository> repository,
         GoodEntityV1[] goods)
     {
         repository.Setup(p =>
-                p.Query(It.IsAny<long>(), 
+                p.Query(It.IsAny<long>(),
                     It.IsAny<CancellationToken>()))
             .ReturnsAsync(goods);
 
@@ -43,7 +43,7 @@ public static class GoodsRepositoryExtensions
                     It.IsAny<CancellationToken>()),
             Times.Once);
     }
-    
+
     public static void VerifyQueryWasCalledOnce(
         this Mock<IGoodsRepository> repository,
         long userId)

@@ -4,6 +4,6 @@ public class GoodsNotFoundException : Exception
 {
     public GoodsNotFoundException() : base("Товары не найдены")
     {
-        
+
     }
 }
