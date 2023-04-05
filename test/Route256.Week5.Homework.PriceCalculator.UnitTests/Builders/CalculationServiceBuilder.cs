@@ -8,13 +8,13 @@ public class CalculationServiceBuilder
 {
     public Mock<ICalculationRepository> CalculationRepository;
     public Mock<IGoodsRepository> GoodsRepository;
-    
+
     public CalculationServiceBuilder()
     {
         CalculationRepository = new Mock<ICalculationRepository>();
         GoodsRepository = new Mock<IGoodsRepository>();
     }
-    
+
     public CalculationServiceStub Build()
     {
         return new CalculationServiceStub(

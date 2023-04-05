@@ -13,7 +13,7 @@ public abstract class BaseRepository : IDbRepository
     {
         _dalSettings = dalSettings;
     }
-    
+
     protected async Task<NpgsqlConnection> GetAndOpenConnection()
     {
         var connection = new NpgsqlConnection(_dalSettings.ConnectionString);
@@ -21,16 +21,16 @@ public abstract class BaseRepository : IDbRepository
         connection.ReloadTypes();
         return connection;
     }
-    
+
     public TransactionScope CreateTransactionScope(
         IsolationLevel level = IsolationLevel.ReadCommitted)
     {
         return new TransactionScope(
             TransactionScopeOption.Required,
-            new TransactionOptions 
-            { 
-                IsolationLevel = level, 
-                Timeout = TimeSpan.FromSeconds(5) 
+            new TransactionOptions
+            {
+                IsolationLevel = level,
+                Timeout = TimeSpan.FromSeconds(5)
             },
             TransactionScopeAsyncFlowOption.Enabled);
     }

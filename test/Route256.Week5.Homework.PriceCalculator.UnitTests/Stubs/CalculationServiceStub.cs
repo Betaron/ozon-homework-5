@@ -8,18 +8,18 @@ public class CalculationServiceStub : CalculationService
 {
     public Mock<ICalculationRepository> CalculationRepository { get; }
     public Mock<IGoodsRepository> GoodsRepository { get; }
-    
+
     public CalculationServiceStub(
         Mock<ICalculationRepository> calculationRepository,
-        Mock<IGoodsRepository> goodsRepository) 
+        Mock<IGoodsRepository> goodsRepository)
         : base(
-            calculationRepository.Object, 
+            calculationRepository.Object,
             goodsRepository.Object)
     {
         CalculationRepository = calculationRepository;
         GoodsRepository = goodsRepository;
     }
-    
+
     public void VerifyNoOtherCalls()
     {
         CalculationRepository.VerifyNoOtherCalls();

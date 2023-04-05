@@ -19,7 +19,7 @@ public static class Postgres
     {
         var mapper = NpgsqlConnection.GlobalTypeMapper;
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-        
+
         mapper.MapComposite<CalculationEntityV1>("calculations_v1", Translator);
         mapper.MapComposite<GoodEntityV1>("goods_v1", Translator);
     }

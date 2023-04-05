@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading;
 using Moq;
 using Route256.Week5.Homework.PriceCalculator.Bll.Models;
@@ -14,33 +14,33 @@ public static class CalculationServiceExtensions
         long id)
     {
         service.Setup(p =>
-                p.SaveCalculation(It.IsAny<SaveCalculationModel>(), 
+                p.SaveCalculation(It.IsAny<SaveCalculationModel>(),
                         It.IsAny<CancellationToken>()))
             .ReturnsAsync(id);
 
         return service;
     }
-    
+
     public static Mock<ICalculationService> SetupCalculatePriceByVolume(
         this Mock<ICalculationService> service,
         double volume,
         decimal price)
     {
         service.Setup(p =>
-                p.CalculatePriceByVolume(It.IsAny<GoodModel[]>(), 
+                p.CalculatePriceByVolume(It.IsAny<GoodModel[]>(),
                     out volume))
             .Returns(price);
 
         return service;
     }
-    
+
     public static Mock<ICalculationService> SetupCalculatePriceByWeight(
         this Mock<ICalculationService> service,
         double weight,
         decimal price)
     {
         service.Setup(p =>
-                p.CalculatePriceByWeight(It.IsAny<GoodModel[]>(), 
+                p.CalculatePriceByWeight(It.IsAny<GoodModel[]>(),
                     out weight))
             .Returns(price);
 
@@ -52,13 +52,13 @@ public static class CalculationServiceExtensions
         QueryCalculationModel[] model)
     {
         service.Setup(p =>
-                p.QueryCalculations(It.IsAny<QueryCalculationFilter>(), 
+                p.QueryCalculations(It.IsAny<QueryCalculationFilter>(),
                         It.IsAny<CancellationToken>()))
             .ReturnsAsync(model);
 
         return service;
     }
-    
+
     public static Mock<ICalculationService> VerifySaveCalculationWasCalledOnce(
         this Mock<ICalculationService> service,
         SaveCalculationModel model)
@@ -68,10 +68,10 @@ public static class CalculationServiceExtensions
                     It.Is<SaveCalculationModel>(x => new CalculationModelComparer().Equals(x, model)),
                     It.IsAny<CancellationToken>()),
             Times.Once);
-        
+
         return service;
     }
-    
+
     public static Mock<ICalculationService> VerifyCalculatePriceByVolumeWasCalledOnce(
         this Mock<ICalculationService> service,
         GoodModel[] model)
@@ -81,10 +81,10 @@ public static class CalculationServiceExtensions
                     It.Is<GoodModel[]>(x => x.SequenceEqual(model)),
                     out It.Ref<double>.IsAny),
             Times.Once);
-        
+
         return service;
     }
-    
+
     public static Mock<ICalculationService> VerifyCalculatePriceByWeightWasCalledOnce(
         this Mock<ICalculationService> service,
         GoodModel[] model)
@@ -97,7 +97,7 @@ public static class CalculationServiceExtensions
 
         return service;
     }
-    
+
     public static Mock<ICalculationService> VerifyQueryCalculationsWasCalledOnce(
         this Mock<ICalculationService> service,
         QueryCalculationFilter filter)

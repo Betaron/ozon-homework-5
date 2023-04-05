@@ -9,7 +9,7 @@ public class CalculateRequestValidator : AbstractValidator<CalculateRequest>
     {
         RuleFor(x => x.UserId)
             .GreaterThan(0);
-        
+
         RuleFor(x => x.Goods)
             .NotEmpty();
 
