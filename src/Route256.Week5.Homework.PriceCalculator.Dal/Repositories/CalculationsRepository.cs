@@ -41,6 +41,27 @@ returning id;
             .ToArray();
     }
 
+    public async Task Delete(long[] calculationIds, CancellationToken token)
+    {
+        const string sqlQuery = @"
+delete
+  from calculations
+ where id in (select unnest(@CalculationIds))
+";
+
+        var sqlQueryParams = new
+        {
+            CalculationIds = calculationIds
+        };
+
+        await using var connection = await GetAndOpenConnection();
+        var calculations = await connection.QueryAsync(
+            new CommandDefinition(
+                sqlQuery,
+                sqlQueryParams,
+                cancellationToken: token));
+    }
+
     public async Task<CalculationEntityV1[]> Query(
         CalculationHistoryQueryModel query,
         CancellationToken token)
@@ -68,6 +89,58 @@ select id
 
         await using var connection = await GetAndOpenConnection();
         var calculations = await connection.QueryAsync<CalculationEntityV1>(
+            new CommandDefinition(
+                sqlQuery,
+                sqlQueryParams,
+                cancellationToken: token));
+
+        return calculations
+            .ToArray();
+    }
+
+    public async Task<CalculationIdsEntityV1[]> QueryIds(long[] calculationIds, CancellationToken token)
+    {
+        const string sqlQuery = @"
+select id
+     , user_id
+     , good_ids
+  from calculations
+ where id in (select unnest(@CalculationIds))
+";
+
+        var sqlQueryParams = new
+        {
+            CalculationIds = calculationIds
+        };
+
+        await using var connection = await GetAndOpenConnection();
+        var calculations = await connection.QueryAsync<CalculationIdsEntityV1>(
+            new CommandDefinition(
+                sqlQuery,
+                sqlQueryParams,
+                cancellationToken: token));
+
+        return calculations
+            .ToArray();
+    }
+
+    public async Task<CalculationIdsEntityV1[]> QueryIds(long userId, CancellationToken token)
+    {
+        const string sqlQuery = @"
+select id
+     , user_id
+     , good_ids
+  from calculations
+ where user_id = @UserId
+";
+
+        var sqlQueryParams = new
+        {
+            UserId = userId
+        };
+
+        await using var connection = await GetAndOpenConnection();
+        var calculations = await connection.QueryAsync<CalculationIdsEntityV1>(
             new CommandDefinition(
                 sqlQuery,
                 sqlQueryParams,

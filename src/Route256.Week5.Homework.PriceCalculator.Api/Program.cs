@@ -1,4 +1,5 @@
 using FluentValidation.AspNetCore;
+using Route256.Week5.Homework.PriceCalculator.Api.Middlewares;
 using Route256.Week5.Homework.PriceCalculator.Api.NamingPolicies;
 using Route256.Week5.Homework.PriceCalculator.Bll.Extensions;
 using Route256.Week5.Homework.PriceCalculator.Dal.Extensions;
@@ -43,6 +44,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 app.MigrateUp();
