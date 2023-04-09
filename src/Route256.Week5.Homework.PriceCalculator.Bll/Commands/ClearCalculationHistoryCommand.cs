@@ -1,6 +1,5 @@
 using MediatR;
 using Route256.Week5.Homework.PriceCalculator.Bll.Exceptions;
-using Route256.Week5.Homework.PriceCalculator.Bll.Models;
 using Route256.Week5.Homework.PriceCalculator.Bll.Services.Interfaces;
 
 namespace Route256.Week5.Homework.PriceCalculator.Bll.Commands;
@@ -45,13 +44,6 @@ public class ClearCalculationHistoryCommandHandler
             }
         }
 
-        var query = pendingIds
-        .Select(x => new QueryCalculationIdsModel(
-            x.Id,
-            x.UserId,
-            x.GoodIds))
-        .ToArray();
-
-        await _calculationService.DeleteCalculations(query, ct);
+        await _calculationService.DeleteCalculations(pendingIds, ct);
     }
 }
