@@ -98,7 +98,7 @@ select id
             .ToArray();
     }
 
-    public async Task<CalculationIdsEntityV1[]> QueryIds(long[] calculationIds, CancellationToken token)
+    public async Task<CalculationIdsModel[]> QueryIds(long[] calculationIds, CancellationToken token)
     {
         const string sqlQuery = @"
 select id
@@ -114,7 +114,7 @@ select id
         };
 
         await using var connection = await GetAndOpenConnection();
-        var calculations = await connection.QueryAsync<CalculationIdsEntityV1>(
+        var calculations = await connection.QueryAsync<CalculationIdsModel>(
             new CommandDefinition(
                 sqlQuery,
                 sqlQueryParams,
@@ -124,7 +124,7 @@ select id
             .ToArray();
     }
 
-    public async Task<CalculationIdsEntityV1[]> QueryIds(long userId, CancellationToken token)
+    public async Task<CalculationIdsModel[]> QueryIds(long userId, CancellationToken token)
     {
         const string sqlQuery = @"
 select id
@@ -140,7 +140,7 @@ select id
         };
 
         await using var connection = await GetAndOpenConnection();
-        var calculations = await connection.QueryAsync<CalculationIdsEntityV1>(
+        var calculations = await connection.QueryAsync<CalculationIdsModel>(
             new CommandDefinition(
                 sqlQuery,
                 sqlQueryParams,

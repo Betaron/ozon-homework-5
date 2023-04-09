@@ -13,11 +13,11 @@ public interface ICalculationRepository : IDbRepository
         CalculationHistoryQueryModel query,
         CancellationToken token);
 
-    Task<CalculationIdsEntityV1[]> QueryIds(
+    Task<CalculationIdsModel[]> QueryIds(
         long[] calculationIds,
         CancellationToken token);
 
-    Task<CalculationIdsEntityV1[]> QueryIds(
+    Task<CalculationIdsModel[]> QueryIds(
         long userId,
         CancellationToken token);
 

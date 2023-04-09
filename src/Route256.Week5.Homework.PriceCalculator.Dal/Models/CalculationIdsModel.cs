@@ -1,6 +1,6 @@
-namespace Route256.Week5.Homework.PriceCalculator.Dal.Entities;
+namespace Route256.Week5.Homework.PriceCalculator.Dal.Models;
 
-public record CalculationIdsEntityV1
+public record CalculationIdsModel
 {
     public long Id { get; init; }
 
