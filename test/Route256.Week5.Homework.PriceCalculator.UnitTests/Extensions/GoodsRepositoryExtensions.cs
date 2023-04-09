@@ -54,4 +54,48 @@ public static class GoodsRepositoryExtensions
                     It.IsAny<CancellationToken>()),
             Times.Once);
     }
+
+    public static void VerifyQueryIdsWasCalledOnce(
+        this Mock<ICalculationRepository> repository,
+        long userId)
+    {
+        repository.Verify(p =>
+                p.QueryIds(
+                    It.Is<long>(x => x == userId),
+                    It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    public static void VerifyQueryIdsWasCalledOnce(
+        this Mock<ICalculationRepository> repository,
+        long[] calculationIds)
+    {
+        repository.Verify(p =>
+                p.QueryIds(
+                    It.Is<long[]>(x => x.SequenceEqual(calculationIds)),
+                    It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    public static void VerifyDeleteWasCalledOnce(
+        this Mock<ICalculationRepository> repository,
+        long[] calculationIds)
+    {
+        repository.Verify(p =>
+                p.Delete(
+                    It.Is<long[]>(x => x.SequenceEqual(calculationIds)),
+                    It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    public static void VerifyDeleteWasCalledOnce(
+        this Mock<IGoodsRepository> repository,
+        long[] goodsIds)
+    {
+        repository.Verify(p =>
+                p.Delete(
+                    It.Is<long[]>(x => x.SequenceEqual(goodsIds)),
+                    It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
 }

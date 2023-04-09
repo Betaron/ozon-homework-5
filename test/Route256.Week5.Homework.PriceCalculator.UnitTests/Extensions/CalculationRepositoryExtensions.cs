@@ -45,6 +45,30 @@ public static class CalculationRepositoryExtensions
         return repository;
     }
 
+    public static Mock<ICalculationRepository> SetupQueryCalculationByUserId(
+        this Mock<ICalculationRepository> repository,
+        CalculationIdsModel[] calculations)
+    {
+        repository.Setup(p =>
+                p.QueryIds(It.IsAny<long>(),
+                        It.IsAny<CancellationToken>()))
+            .ReturnsAsync(calculations);
+
+        return repository;
+    }
+
+    public static Mock<ICalculationRepository> SetupQueryCalculationByCalculationIds(
+        this Mock<ICalculationRepository> repository,
+        CalculationIdsModel[] calculations)
+    {
+        repository.Setup(p =>
+                p.QueryIds(It.IsAny<long[]>(),
+                        It.IsAny<CancellationToken>()))
+            .ReturnsAsync(calculations);
+
+        return repository;
+    }
+
     public static Mock<ICalculationRepository> VerifyAddWasCalledOnce(
         this Mock<ICalculationRepository> repository,
         CalculationEntityV1[] calculations)

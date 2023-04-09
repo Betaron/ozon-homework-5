@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using FluentAssertions;
 using Route256.Week5.Homework.PriceCalculator.Bll.Services;
+using Route256.Week5.Homework.PriceCalculator.Dal.Models;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Builders;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Extensions;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Fakers;
@@ -150,5 +151,136 @@ public class CalculationServiceTests
             .Should().IntersectWith(calculations.Select(x => x.TotalVolume));
         result.Select(x => x.Price)
             .Should().IntersectWith(calculations.Select(x => x.Price));
+    }
+
+    [Fact]
+    public async Task Query_CalculationsIds_SelectByUserId_Success()
+    {
+        // arrange
+        var userId = Create.RandomId();
+        var calculationsIds = CalculationEntityV1Faker.Generate(3)
+            .Select(x => new CalculationIdsModel()
+            {
+                Id = x.Id,
+                UserId = userId,
+                GoodIds = x.GoodIds
+            })
+            .ToArray();
+
+        var builder = new CalculationServiceBuilder();
+        builder.CalculationRepository
+            .SetupQueryCalculationByUserId(calculationsIds);
+        var service = builder.Build();
+
+        //act
+        var result = await service.QueryCalculationsIds(userId, default);
+
+        //asserts
+        service.CalculationRepository
+            .VerifyQueryIdsWasCalledOnce(userId);
+
+        service.VerifyNoOtherCalls();
+
+        result.Should().NotBeEmpty();
+        result.Should().OnlyContain(x => x.UserId == userId);
+        result.Should().OnlyContain(x => x.Id > 0);
+        result.Select(x => x.Id)
+            .Should().IntersectWith(calculationsIds.Select(x => x.Id));
+        result.Select(x => x.UserId)
+            .Should().IntersectWith(calculationsIds.Select(x => x.UserId));
+        result.Select(x => x.GoodIds)
+            .Should().IntersectWith(calculationsIds.Select(x => x.GoodIds));
+    }
+
+    [Fact]
+    public async Task Query_CalculationsIds_SelectByCalculationIds_Success()
+    {
+        // arrange
+        var userId = Create.RandomId();
+        var calculationsIds = CalculationEntityV1Faker.Generate(3)
+            .Select(x => new CalculationIdsModel()
+            {
+                Id = Create.RandomId(),
+                UserId = userId,
+                GoodIds = x.GoodIds
+            })
+            .ToArray();
+        var ids = calculationsIds.Select(x => x.Id).ToArray();
+
+        var builder = new CalculationServiceBuilder();
+        builder.CalculationRepository
+            .SetupQueryCalculationByCalculationIds(calculationsIds);
+        var service = builder.Build();
+
+        //act
+        var result = await service.QueryCalculationsIds(ids, default);
+
+        //asserts
+        service.CalculationRepository
+            .VerifyQueryIdsWasCalledOnce(ids);
+
+        service.VerifyNoOtherCalls();
+
+        result.Should().NotBeEmpty();
+        result.Should().OnlyContain(x => x.UserId == userId);
+        result.Should().OnlyContain(x => x.Id > 0);
+        result.Select(x => x.Id)
+            .Should().IntersectWith(calculationsIds.Select(x => x.Id));
+        result.Select(x => x.UserId)
+            .Should().IntersectWith(calculationsIds.Select(x => x.UserId));
+        result.Select(x => x.GoodIds)
+            .Should().IntersectWith(calculationsIds.Select(x => x.GoodIds));
+    }
+
+    [Fact]
+    public async Task Delete_Calculations_Success()
+    {
+        // arrange
+        var userId = Create.RandomId();
+        var calculationsIds = CalculationEntityV1Faker.Generate(3)
+            .Select(x => new Bll.Models.QueryCalculationIdsModel(Create.RandomId(), userId, x.GoodIds))
+            .ToArray();
+
+        var builder = new CalculationServiceBuilder();
+        var service = builder.Build();
+
+        //act
+        await service.DeleteCalculations(calculationsIds, default);
+
+        //assert
+        service.CalculationRepository.VerifyDeleteWasCalledOnce(
+            calculationsIds.Select(x => x.Id).ToArray());
+        service.GoodsRepository.VerifyDeleteWasCalledOnce(
+            calculationsIds.SelectMany(x => x.GoodIds).ToArray());
+    }
+
+    [Fact]
+    public async Task Query_Calculations_NonExistance_Success()
+    {
+        // arrange
+        var userId = Create.RandomId();
+        var calculationsIds = CalculationEntityV1Faker.Generate(3)
+            .Select(x => new CalculationIdsModel()
+            {
+                Id = Create.RandomId(),
+                UserId = userId,
+                GoodIds = x.GoodIds
+            })
+            .ToArray();
+        var ids = calculationsIds.Select(x => x.Id).ToArray();
+        var nonExistingIds = Create.RandomId(3);
+
+        var builder = new CalculationServiceBuilder();
+        builder.CalculationRepository
+            .SetupQueryCalculationByCalculationIds(calculationsIds);
+        var service = builder.Build();
+
+        var ExistingAndNonExistingIds = nonExistingIds.Union(ids).ToArray();
+
+        //act
+        var result = await service.CheckCalculationsNonExistence(ExistingAndNonExistingIds, default);
+
+        //assert
+        result.Should().IntersectWith(nonExistingIds);
     }
 }
