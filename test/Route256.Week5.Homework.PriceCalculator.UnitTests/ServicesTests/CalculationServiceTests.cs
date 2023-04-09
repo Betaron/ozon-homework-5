@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Transactions;
 using FluentAssertions;
 using Route256.Week5.Homework.PriceCalculator.Bll.Services;
-using Route256.Week5.Homework.PriceCalculator.Dal.Models;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Builders;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Extensions;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Fakers;
@@ -158,13 +157,9 @@ public class CalculationServiceTests
     {
         // arrange
         var userId = Create.RandomId();
-        var calculationsIds = CalculationEntityV1Faker.Generate(3)
-            .Select(x => new CalculationIdsModel()
-            {
-                Id = x.Id,
-                UserId = userId,
-                GoodIds = x.GoodIds
-            })
+        var calculationsIds = CalculationIdsModelFaker.Generate(3)
+            .Select(x => x
+                .WithUserId(userId))
             .ToArray();
 
         var builder = new CalculationServiceBuilder();
@@ -197,13 +192,10 @@ public class CalculationServiceTests
     {
         // arrange
         var userId = Create.RandomId();
-        var calculationsIds = CalculationEntityV1Faker.Generate(3)
-            .Select(x => new CalculationIdsModel()
-            {
-                Id = Create.RandomId(),
-                UserId = userId,
-                GoodIds = x.GoodIds
-            })
+        var calculationsIds = CalculationIdsModelFaker.Generate(3)
+            .Select(x => x
+                .WithUserId(userId)
+                .WithId(Create.RandomId()))
             .ToArray();
         var ids = calculationsIds.Select(x => x.Id).ToArray();
 
@@ -237,7 +229,7 @@ public class CalculationServiceTests
     {
         // arrange
         var userId = Create.RandomId();
-        var calculationsIds = CalculationEntityV1Faker.Generate(3)
+        var calculationsIds = CalculationIdsModelFaker.Generate(3)
             .Select(x => new Bll.Models.QueryCalculationIdsModel(Create.RandomId(), userId, x.GoodIds))
             .ToArray();
 
@@ -259,13 +251,10 @@ public class CalculationServiceTests
     {
         // arrange
         var userId = Create.RandomId();
-        var calculationsIds = CalculationEntityV1Faker.Generate(3)
-            .Select(x => new CalculationIdsModel()
-            {
-                Id = Create.RandomId(),
-                UserId = userId,
-                GoodIds = x.GoodIds
-            })
+        var calculationsIds = CalculationIdsModelFaker.Generate(3)
+            .Select(x => x
+                .WithUserId(userId)
+                .WithId(Create.RandomId()))
             .ToArray();
         var ids = calculationsIds.Select(x => x.Id).ToArray();
         var nonExistingIds = Create.RandomId(3);
