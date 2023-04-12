@@ -76,8 +76,8 @@ POST /v2/delivery-prices/get-history
   calculation_ids: [ 0,, ... ] 
 }
 => 200 {}
-=> 403 OneOrManyCalculationsBelongsToAnotherUserException { wrong_calculation_ids: [0, ...]}
-=> 400 OneOrManyCalculationsNotFoundException
+=> 403 OneOrManyCalculationsBelongsToAnotherUserException []
+=> 400 OneOrManyCalculationsNotFoundException []
 ```
 
 Необходимо написать HP-интеграционный тест на новый метод репозитория. Добавить юнит тесты на _запрос_, проверяющие как HP, так и проверки на принадлежность и существование расчетов.
