@@ -20,12 +20,18 @@ public class ExceptionMiddleware
         catch (OneOrManyCalculationsBelongsToAnotherUserException ex)
         {
             httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-            await httpContext.Response.WriteAsJsonAsync(
-                new { wrong_calculation_ids = ex.WrongCalculationIds });
+            if (ex.Body is not null)
+            {
+                await httpContext.Response.WriteAsJsonAsync(ex.Body);
+            }
         }
-        catch (OneOrManyCalculationsNotFoundException)
+        catch (OneOrManyCalculationsNotFoundException ex)
         {
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+            if (ex.Body is not null)
+            {
+                await httpContext.Response.WriteAsJsonAsync(ex.Body);
+            }
         }
         catch (Exception)
         {

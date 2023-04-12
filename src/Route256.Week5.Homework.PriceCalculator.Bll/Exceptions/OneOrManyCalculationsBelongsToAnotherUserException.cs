@@ -2,11 +2,11 @@ namespace Route256.Week5.Homework.PriceCalculator.Bll.Exceptions;
 
 public class OneOrManyCalculationsBelongsToAnotherUserException : Exception
 {
-    public long[] WrongCalculationIds { get; }
+    public object? Body { get; }
 
-    public OneOrManyCalculationsBelongsToAnotherUserException(long[] wrongCalculationIds)
+    public OneOrManyCalculationsBelongsToAnotherUserException(object? body = null)
         : base("Один или несколько расчетов принадлежат другому пользователю")
     {
-        WrongCalculationIds = wrongCalculationIds;
+        Body = body;
     }
 }

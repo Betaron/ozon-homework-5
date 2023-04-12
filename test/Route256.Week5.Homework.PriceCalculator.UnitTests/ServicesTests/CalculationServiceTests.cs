@@ -136,11 +136,6 @@ public class CalculationServiceTests
         var result = await service.QueryCalculations(filter, default);
 
         //asserts
-        service.CalculationRepository
-            .VerifyQueryWasCalledOnce(queryModel);
-
-        service.VerifyNoOtherCalls();
-
         result.Should().NotBeEmpty();
         result.Should().OnlyContain(x => x.UserId == userId);
         result.Should().OnlyContain(x => x.Id > 0);

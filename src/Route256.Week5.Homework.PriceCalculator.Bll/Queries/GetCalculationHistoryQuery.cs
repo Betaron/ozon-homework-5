@@ -32,7 +32,7 @@ public class GetCalculationHistoryQueryHandler
             var nonExistenceIds = await _calculationService.CheckCalculationsNonExistence(request.CalculationIds, cancellationToken);
             if (nonExistenceIds.Any())
             {
-                throw new OneOrManyCalculationsNotFoundException();
+                throw new OneOrManyCalculationsNotFoundException(Array.Empty<long>());
             }
 
             var pendingIds = await _calculationService.QueryCalculationsIds(request.CalculationIds, cancellationToken);
@@ -41,7 +41,7 @@ public class GetCalculationHistoryQueryHandler
                 .Select(x => x.Id).ToArray();
             if (notBelongingIds.Any())
             {
-                throw new OneOrManyCalculationsBelongsToAnotherUserException(notBelongingIds);
+                throw new OneOrManyCalculationsBelongsToAnotherUserException(Array.Empty<long>());
             }
         }
 

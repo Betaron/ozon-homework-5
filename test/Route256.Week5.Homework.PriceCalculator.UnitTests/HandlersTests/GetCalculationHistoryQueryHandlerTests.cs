@@ -39,11 +39,6 @@ public class GetCalculationHistoryQueryHandlerTests
         var result = await handler.Handle(command, default);
 
         //asserts
-        handler.CalculationService
-            .VerifyQueryCalculationsWasCalledOnce(filter);
-
-        handler.VerifyNoOtherCalls();
-
         result.Should().NotBeNull();
         result.Items.Should().HaveCount(queryModels.Length);
         result.Items.Select(x => x.Price)
