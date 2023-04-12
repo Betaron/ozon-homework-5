@@ -59,7 +59,8 @@ public class DeliveryPricesController : ControllerBase
         var query = new GetCalculationHistoryQuery(
             request.UserId,
             request.Take,
-            request.Skip);
+            request.Skip,
+            Array.Empty<long>());
         var result = await _mediator.Send(query, ct);
 
         return result.Items

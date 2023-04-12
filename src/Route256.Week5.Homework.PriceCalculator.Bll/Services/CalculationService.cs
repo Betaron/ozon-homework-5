@@ -83,7 +83,8 @@ public class CalculationService : ICalculationService
         var result = await _calculationRepository.Query(new CalculationHistoryQueryModel(
                 query.UserId,
                 query.Limit,
-                query.Offset),
+                query.Offset,
+                query.CalculationIds),
             token);
 
         return result

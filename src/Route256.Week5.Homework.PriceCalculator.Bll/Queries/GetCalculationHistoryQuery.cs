@@ -1,4 +1,5 @@
 using MediatR;
+using Route256.Week5.Homework.PriceCalculator.Bll.Exceptions;
 using Route256.Week5.Homework.PriceCalculator.Bll.Models;
 using Route256.Week5.Homework.PriceCalculator.Bll.Services.Interfaces;
 
@@ -7,7 +8,8 @@ namespace Route256.Week5.Homework.PriceCalculator.Bll.Queries;
 public record GetCalculationHistoryQuery(
     long UserId,
     int Take,
-    int Skip)
+    int Skip,
+    long[] CalculationIds)
     : IRequest<GetHistoryQueryResult>;
 
 public class GetCalculationHistoryQueryHandler
@@ -25,10 +27,29 @@ public class GetCalculationHistoryQueryHandler
         GetCalculationHistoryQuery request,
         CancellationToken cancellationToken)
     {
+        if (request.CalculationIds.Any())
+        {
+            var nonExistenceIds = await _calculationService.CheckCalculationsNonExistence(request.CalculationIds, cancellationToken);
+            if (nonExistenceIds.Any())
+            {
+                throw new OneOrManyCalculationsNotFoundException();
+            }
+
+            var pendingIds = await _calculationService.QueryCalculationsIds(request.CalculationIds, cancellationToken);
+            var notBelongingIds = pendingIds
+                .Where(x => x.UserId != request.UserId)
+                .Select(x => x.Id).ToArray();
+            if (notBelongingIds.Any())
+            {
+                throw new OneOrManyCalculationsBelongsToAnotherUserException(notBelongingIds);
+            }
+        }
+
         var query = new QueryCalculationFilter(
             request.UserId,
             request.Take,
-            request.Skip);
+            request.Skip,
+            request.CalculationIds);
 
         var log = await _calculationService.QueryCalculations(query, cancellationToken);
 
