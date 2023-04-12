@@ -75,7 +75,17 @@ POST /v2/delivery-prices/get-history
   skip: 0,
   calculation_ids: [ 0,, ... ] 
 }
-=> 200 {}
+=> 200 [
+  {
+    "cargo": {
+      "volume": 0,
+      "weight": 0,
+      "good_ids": [ 0,, ... ]
+    },
+    "price": 0
+  },
+  ...
+]
 => 403 OneOrManyCalculationsBelongsToAnotherUserException []
 => 400 OneOrManyCalculationsNotFoundException []
 ```
