@@ -1,6 +1,9 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Route256.Week5.Homework.PriceCalculator.Bll.Exceptions;
+using Route256.Week5.Homework.PriceCalculator.Bll.Models;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Builders;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Extensions;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Fakers;
@@ -49,4 +52,71 @@ public class GetCalculationHistoryQueryHandlerTests
             .Should().IntersectWith(queryModels.Select(x => x.TotalWeight));
     }
 
+    [Fact]
+    public async Task Handle_NotEmptyIds_BelongsAnotherUser_Throws()
+    {
+        //arrange
+        var userId = Create.RandomId();
+        var anotherUserId = Create.RandomId();
+        var goodsIds = Create.RandomId(3);
+        var queryModels = QueryCalculationModelFaker.Generate()
+            .Select(x => x
+                .WithUserId(anotherUserId)
+                .WithGoodsIds(goodsIds))
+            .ToArray();
+        var queryIdsModels = queryModels
+            .Select(x => new QueryCalculationIdsModel(
+                x.Id,
+                x.UserId,
+                x.GoodIds))
+            .ToArray();
+
+        var query = GetCalculationHistoryQueryFaker.Generate()
+            .WithUserId(userId);
+
+        var builder = new GetCalculationHistoryHandlerBuilder();
+        builder.CalculationService
+            .SetupQueryCalculationsIdsByCalculationsIds(queryIdsModels)
+            .SetupCheckCalculationsNonExistence(Array.Empty<long>())
+            .SetupQueryCalculations(queryModels);
+        var handler = builder.Build();
+
+        //act, assert
+        var exeption = await Assert.ThrowsAsync<OneOrManyCalculationsBelongsToAnotherUserException>
+            (() => handler.Handle(query, default));
+        exeption.Body.Should().Be(Array.Empty<long>());
+    }
+
+    [Fact]
+    public async Task Handle_NotEmptyIds_GoodsNotFound_Throws()
+    {
+        //arrange
+        var userId = Create.RandomId();
+        var goodsIds = Create.RandomId(3);
+        var queryModels = QueryCalculationModelFaker.Generate()
+            .Select(x => x
+                .WithUserId(userId))
+            .ToArray();
+        var queryIdsModels = queryModels
+            .Select(x => new QueryCalculationIdsModel(
+                x.Id,
+                x.UserId,
+                x.GoodIds))
+            .ToArray();
+
+        var query = GetCalculationHistoryQueryFaker.Generate()
+            .WithUserId(userId);
+
+        var builder = new GetCalculationHistoryHandlerBuilder();
+        builder.CalculationService
+            .SetupQueryCalculationsIdsByCalculationsIds(queryIdsModels)
+            .SetupCheckCalculationsNonExistence(goodsIds)
+            .SetupQueryCalculations(queryModels);
+        var handler = builder.Build();
+
+        //act, assert
+        var exeption = await Assert.ThrowsAsync<OneOrManyCalculationsNotFoundException>
+            (() => handler.Handle(query, default));
+        exeption.Body.Should().Be(Array.Empty<long>());
+    }
 }
