@@ -21,7 +21,7 @@ public interface ICalculationService
         CancellationToken token);
 
     Task DeleteCalculations(
-        QueryCalculationIdsModel[] IdsModels,
+        QueryCalculationIdsModel[] idsModels,
         CancellationToken cancellationToken);
 
     Task<QueryCalculationIdsModel[]> QueryCalculationsIds(

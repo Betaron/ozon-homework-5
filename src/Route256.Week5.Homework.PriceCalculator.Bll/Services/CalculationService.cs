@@ -97,15 +97,18 @@ public class CalculationService : ICalculationService
             .ToArray();
     }
 
-    public async Task DeleteCalculations(
-        QueryCalculationIdsModel[] IdsModels,
+    public Task DeleteCalculations(
+        QueryCalculationIdsModel[] idsModels,
         CancellationToken cancellationToken)
     {
-        var calculationsIds = IdsModels.Select(x => x.Id).ToArray();
-        var goodsIds = IdsModels.SelectMany(x => x.GoodIds).ToArray();
+        var models = idsModels.Select(x => new CalculationIdsModel()
+        {
+            Id = x.Id,
+            UserId = x.UserId,
+            GoodIds = x.GoodIds
+        }).ToArray();
 
-        await _calculationRepository.Delete(calculationsIds, cancellationToken);
-        await _goodsRepository.Delete(goodsIds, cancellationToken);
+        return _calculationRepository.DeleteCascade(models, cancellationToken);
     }
 
     public async Task<QueryCalculationIdsModel[]> QueryCalculationsIds(
