@@ -55,7 +55,7 @@ delete
         };
 
         await using var connection = await GetAndOpenConnection();
-        var calculations = await connection.QueryAsync(
+        var calculations = await connection.ExecuteAsync(
             new CommandDefinition(
                 sqlQuery,
                 sqlQueryParams,
@@ -85,7 +85,7 @@ delete
         };
 
         await using var connection = await GetAndOpenConnection();
-        var calculations = await connection.QueryAsync(
+        var calculations = await connection.ExecuteAsync(
             new CommandDefinition(
                 sqlQuery,
                 sqlQueryParams,
