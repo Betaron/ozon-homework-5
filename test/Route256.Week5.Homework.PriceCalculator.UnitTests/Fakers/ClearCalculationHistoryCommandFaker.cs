@@ -26,7 +26,7 @@ public static class ClearCalculationHistoryCommandFaker
         return src with { UserId = userId };
     }
 
-    public static ClearCalculationHistoryCommand WithGoods(
+    public static ClearCalculationHistoryCommand WithCalculationIds(
         this ClearCalculationHistoryCommand src,
         long[] calculationIds)
     {
