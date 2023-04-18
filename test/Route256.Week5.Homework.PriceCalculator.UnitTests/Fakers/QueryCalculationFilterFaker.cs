@@ -41,4 +41,11 @@ public static class QueryCalculationFilterFaker
     {
         return src with { Offset = offset };
     }
+
+    public static QueryCalculationFilter WithCalculationIds(
+    this QueryCalculationFilter src,
+    long[] calculationIds)
+    {
+        return src with { CalculationIds = calculationIds };
+    }
 }

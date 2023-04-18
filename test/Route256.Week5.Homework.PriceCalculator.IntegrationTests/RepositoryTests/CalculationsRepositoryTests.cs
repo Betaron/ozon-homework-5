@@ -122,52 +122,6 @@ public class CalculationsRepositoryTests
         }
     }
 
-    [Theory]
-    [InlineData(3, 2, 4, 2)]
-    [InlineData(5, 0, 3, 3)]
-    [InlineData(4, 1, 1, 0)]
-    [InlineData(3, 5, 1, 0)]
-    public async Task Query_CalculationsInRangeWithCalculationIdsFilter_Success(
-        int take,
-        int skip,
-        int idsCount,
-        int expectedCount)
-    {
-        // Arrange
-        var userId = Create.RandomId();
-        var now = DateTimeOffset.UtcNow;
-
-        var calculations = CalculationEntityV1Faker.Generate(5)
-            .Select(x => x.WithUserId(userId)
-                .WithAt(now))
-            .ToArray();
-        var calculationsIds = await _calculationRepository.Add(calculations, default);
-        calculationsIds = calculationsIds.Take(idsCount).ToArray();
-
-        var allCalculations = await _calculationRepository.Query(
-            new CalculationHistoryQueryModel(userId, 100, 0),
-            default);
-
-        var expected = allCalculations
-            .OrderByDescending(x => x.At)
-            .Skip(skip)
-            .Take(take)
-            .Where(x => calculationsIds.Contains(x.Id)).ToArray();
-
-        // Act
-        var foundCalculations = await _calculationRepository.Query(
-            new CalculationHistoryQueryModel(userId, take, skip, calculationsIds),
-            default);
-
-        // Asserts
-        foundCalculations.Should().HaveCount(expectedCount);
-
-        if (expectedCount > 0)
-        {
-            foundCalculations.Should().BeEquivalentTo(expected);
-        }
-    }
-
     [Fact]
     public async Task Query_AllCalculations_Success()
     {

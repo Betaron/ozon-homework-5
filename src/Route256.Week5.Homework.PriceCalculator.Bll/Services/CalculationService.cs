@@ -85,7 +85,15 @@ public class CalculationService : ICalculationService
                 query.Limit,
                 query.Offset,
                 query.CalculationIds),
-            token);
+        token);
+
+        if (query.CalculationIds != null)
+        {
+            if (query.CalculationIds.Length != 0)
+            {
+                result = result.Where(x => query.CalculationIds.Contains(x.Id)).ToArray();
+            }
+        }
 
         return result
             .Select(x => new QueryCalculationModel(

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -116,7 +117,8 @@ public class CalculationServiceTests
         var userId = Create.RandomId();
 
         var filter = QueryCalculationFilterFaker.Generate()
-            .WithUserId(userId);
+            .WithUserId(userId)
+            .WithCalculationIds(Array.Empty<long>());
 
         var calculations = CalculationEntityV1Faker.Generate(5)
             .Select(x => x.WithUserId(userId))
@@ -125,7 +127,8 @@ public class CalculationServiceTests
         var queryModel = CalculationHistoryQueryModelFaker.Generate()
             .WithUserId(userId)
             .WithLimit(filter.Limit)
-            .WithOffset(filter.Offset);
+            .WithOffset(filter.Offset)
+            .WithCalculationIds(Array.Empty<long>());
 
         var builder = new CalculationServiceBuilder();
         builder.CalculationRepository
@@ -136,6 +139,11 @@ public class CalculationServiceTests
         var result = await service.QueryCalculations(filter, default);
 
         //asserts
+        service.CalculationRepository
+            .VerifyQueryWasCalledOnce(queryModel);
+
+        service.VerifyNoOtherCalls();
+
         result.Should().NotBeEmpty();
         result.Should().OnlyContain(x => x.UserId == userId);
         result.Should().OnlyContain(x => x.Id > 0);
@@ -145,6 +153,58 @@ public class CalculationServiceTests
             .Should().IntersectWith(calculations.Select(x => x.TotalVolume));
         result.Select(x => x.Price)
             .Should().IntersectWith(calculations.Select(x => x.Price));
+    }
+
+    [Theory]
+    [InlineData(5, 0, 3, 3)]
+    [InlineData(4, 2, 3, 1)]
+    [InlineData(0, 5, 3, 0)]
+    [InlineData(5, 4, 3, 0)]
+    public async Task QueryCalculations_NotEmptyIds_Success(int take, int skip, int idsCount, int expectedCount)
+    {
+        // arrange
+        var userId = Create.RandomId();
+
+        var calculations = CalculationEntityV1Faker.Generate(5)
+            .Select(x => x
+            .WithUserId(userId)
+            .WithId(Create.RandomId()))
+            .ToArray();
+
+        var expectedCalculations = calculations.Take(idsCount).Skip(skip);
+
+        var queryIds = calculations
+            .Take(idsCount)
+            .Select(x => x.Id)
+            .ToArray();
+
+        var filter = QueryCalculationFilterFaker.Generate()
+            .WithUserId(userId)
+            .WithLimit(take)
+            .WithOffset(skip)
+            .WithCalculationIds(queryIds);
+
+        var queryModel = CalculationHistoryQueryModelFaker.Generate()
+            .WithUserId(userId)
+            .WithLimit(filter.Limit)
+            .WithOffset(filter.Offset)
+            .WithCalculationIds(queryIds);
+
+        var builder = new CalculationServiceBuilder();
+        builder.CalculationRepository
+            .SetupQueryCalculation(calculations.Take(take).Skip(skip).ToArray());
+        var service = builder.Build();
+
+        //act
+        var result = await service.QueryCalculations(filter, default);
+
+        //asserts
+        service.CalculationRepository
+            .VerifyQueryWasCalledOnce(queryModel);
+
+        service.VerifyNoOtherCalls();
+
+        result.Should().HaveCount(expectedCount);
     }
 
     [Fact]

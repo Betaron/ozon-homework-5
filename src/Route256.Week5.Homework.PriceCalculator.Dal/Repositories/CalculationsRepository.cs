@@ -95,7 +95,6 @@ select id
                 cancellationToken: token));
 
         return calculations
-            .Where(x => query.CalculationIds?.Contains(x.Id) ?? false || query.CalculationIds is null)
             .ToArray();
     }
 
