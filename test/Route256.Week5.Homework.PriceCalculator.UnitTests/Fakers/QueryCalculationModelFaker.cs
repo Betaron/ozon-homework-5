@@ -28,4 +28,11 @@ public static class QueryCalculationModelFaker
     {
         return src with { UserId = userId };
     }
+
+    public static QueryCalculationModel WithGoodsIds(
+    this QueryCalculationModel src,
+    long[] goodsIds)
+    {
+        return src with { GoodIds = goodsIds };
+    }
 }

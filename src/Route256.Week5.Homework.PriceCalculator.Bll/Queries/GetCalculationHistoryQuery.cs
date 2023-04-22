@@ -7,7 +7,8 @@ namespace Route256.Week5.Homework.PriceCalculator.Bll.Queries;
 public record GetCalculationHistoryQuery(
     long UserId,
     int Take,
-    int Skip)
+    int Skip,
+    long[] CalculationIds)
     : IRequest<GetHistoryQueryResult>;
 
 public class GetCalculationHistoryQueryHandler
@@ -28,7 +29,8 @@ public class GetCalculationHistoryQueryHandler
         var query = new QueryCalculationFilter(
             request.UserId,
             request.Take,
-            request.Skip);
+            request.Skip,
+            request.CalculationIds);
 
         var log = await _calculationService.QueryCalculations(query, cancellationToken);
 

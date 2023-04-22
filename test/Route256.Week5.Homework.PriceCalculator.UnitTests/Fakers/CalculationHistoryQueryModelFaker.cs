@@ -41,4 +41,11 @@ public static class CalculationHistoryQueryModelFaker
     {
         return src with { Offset = offset };
     }
+
+    public static CalculationHistoryQueryModel WithCalculationIds(
+        this CalculationHistoryQueryModel src,
+        long[] calculationIds)
+    {
+        return src with { CalculationIds = calculationIds };
+    }
 }

@@ -40,7 +40,8 @@ public class ClearCalculationHistoryCommandHandler
                 .Select(x => x.Id).ToArray();
             if (notBelongingIds.Any())
             {
-                throw new OneOrManyCalculationsBelongsToAnotherUserException(notBelongingIds);
+                throw new OneOrManyCalculationsBelongsToAnotherUserException(
+                    new { wrong_calculation_ids = notBelongingIds });
             }
         }
 

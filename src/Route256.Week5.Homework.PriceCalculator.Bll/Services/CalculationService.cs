@@ -83,8 +83,17 @@ public class CalculationService : ICalculationService
         var result = await _calculationRepository.Query(new CalculationHistoryQueryModel(
                 query.UserId,
                 query.Limit,
-                query.Offset),
-            token);
+                query.Offset,
+                query.CalculationIds),
+        token);
+
+        if (query.CalculationIds != null)
+        {
+            if (query.CalculationIds.Length != 0)
+            {
+                result = result.Where(x => query.CalculationIds.Contains(x.Id)).ToArray();
+            }
+        }
 
         return result
             .Select(x => new QueryCalculationModel(

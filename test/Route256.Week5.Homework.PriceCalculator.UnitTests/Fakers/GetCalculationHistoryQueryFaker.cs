@@ -41,4 +41,11 @@ public static class GetCalculationHistoryQueryFaker
     {
         return src with { Skip = skip };
     }
+
+    public static GetCalculationHistoryQuery WithCalculationIds(
+        this GetCalculationHistoryQuery src,
+        long[] calculationIds)
+    {
+        return src with { CalculationIds = calculationIds };
+    }
 }
