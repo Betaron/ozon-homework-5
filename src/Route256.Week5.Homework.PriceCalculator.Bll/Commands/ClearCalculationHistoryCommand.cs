@@ -29,7 +29,7 @@ public class ClearCalculationHistoryCommandHandler
 
         if (request.CalculationIds.Any())
         {
-            var nonExistenceIds = await _calculationService.CheckCalculationsNonExistence(request.CalculationIds, ct);
+            var nonExistenceIds = request.CalculationIds.Except(pendingIds.Select(x => x.Id)).ToArray();
             if (nonExistenceIds.Any())
             {
                 throw new OneOrManyCalculationsNotFoundException();

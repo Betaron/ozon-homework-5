@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using FluentAssertions;
 using Route256.Week5.Homework.PriceCalculator.Bll.Services;
+using Route256.Week5.Homework.PriceCalculator.Dal.Models;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Builders;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Extensions;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Fakers;
@@ -295,10 +296,13 @@ public class CalculationServiceTests
         await service.DeleteCalculations(calculationsIds, default);
 
         //assert
-        service.CalculationRepository.VerifyDeleteWasCalledOnce(
-            calculationsIds.Select(x => x.Id).ToArray());
-        service.GoodsRepository.VerifyDeleteWasCalledOnce(
-            calculationsIds.SelectMany(x => x.GoodIds).ToArray());
+        service.CalculationRepository.VerifyDeleteCascadeWasCalledOnce(
+            calculationsIds.Select(x => new CalculationIdsModel
+            {
+                Id = x.Id,
+                UserId = x.UserId,
+                GoodIds = x.GoodIds,
+            }).ToArray());
     }
 
     [Fact]

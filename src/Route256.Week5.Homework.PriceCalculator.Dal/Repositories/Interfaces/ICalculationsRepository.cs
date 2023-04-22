@@ -24,4 +24,8 @@ public interface ICalculationRepository : IDbRepository
     Task Delete(
         long[] calculationIds,
         CancellationToken token);
+
+    Task DeleteCascade(
+    CalculationIdsModel[] calculationIds,
+    CancellationToken token);
 }

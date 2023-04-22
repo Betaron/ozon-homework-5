@@ -22,7 +22,7 @@ public class ClearCalculationHistoryCommandHandlerTests
 
         var command = ClearCalculationHistoryCommandFaker.Generate()
             .WithUserId(userId)
-            .WithGoods(Array.Empty<long>());
+            .WithCalculationIds(Array.Empty<long>());
 
         var builder = new ClearCalculationHistoryHandlerBuilder();
         builder.CalculationService
@@ -51,12 +51,11 @@ public class ClearCalculationHistoryCommandHandlerTests
 
         var command = ClearCalculationHistoryCommandFaker.Generate()
             .WithUserId(userId)
-            .WithGoods(goodsIds);
+            .WithCalculationIds(ids);
 
         var builder = new ClearCalculationHistoryHandlerBuilder();
         builder.CalculationService
-            .SetupQueryCalculationsIdsByCalculationsIds(calculationIds)
-            .SetupCheckCalculationsNonExistence(Array.Empty<long>());
+            .SetupQueryCalculationsIdsByCalculationsIds(calculationIds);
         var handler = builder.Build();
 
         //act
@@ -82,12 +81,11 @@ public class ClearCalculationHistoryCommandHandlerTests
 
         var command = ClearCalculationHistoryCommandFaker.Generate()
             .WithUserId(userId)
-            .WithGoods(goodsIds);
+            .WithCalculationIds(ids);
 
         var builder = new ClearCalculationHistoryHandlerBuilder();
         builder.CalculationService
-            .SetupQueryCalculationsIdsByCalculationsIds(calculationIds)
-            .SetupCheckCalculationsNonExistence(Array.Empty<long>());
+            .SetupQueryCalculationsIdsByCalculationsIds(calculationIds);
         var handler = builder.Build();
 
         //act, assert
@@ -109,7 +107,7 @@ public class ClearCalculationHistoryCommandHandlerTests
 
         var command = ClearCalculationHistoryCommandFaker.Generate()
             .WithUserId(userId)
-            .WithGoods(goodsIds);
+            .WithCalculationIds(goodsIds);
 
         var builder = new ClearCalculationHistoryHandlerBuilder();
         builder.CalculationService

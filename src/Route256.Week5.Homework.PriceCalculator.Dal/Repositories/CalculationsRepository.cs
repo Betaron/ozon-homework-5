@@ -55,7 +55,37 @@ delete
         };
 
         await using var connection = await GetAndOpenConnection();
-        var calculations = await connection.QueryAsync(
+        var calculations = await connection.ExecuteAsync(
+            new CommandDefinition(
+                sqlQuery,
+                sqlQueryParams,
+                cancellationToken: token));
+    }
+
+    public async Task DeleteCascade(CalculationIdsModel[] calculationIdsModel, CancellationToken token)
+    {
+        var goodsIds = calculationIdsModel.SelectMany(x => x.GoodIds).Distinct().ToArray();
+        var calculationIds = calculationIdsModel.Select(x => x.Id).ToArray();
+
+
+        const string sqlQuery = @"
+delete
+  from calculations
+ where id in (select unnest(@CalculationIds));
+
+delete
+  from goods
+ where id in (select unnest(@GoodsIds));
+";
+
+        var sqlQueryParams = new
+        {
+            CalculationIds = calculationIds,
+            GoodsIds = goodsIds
+        };
+
+        await using var connection = await GetAndOpenConnection();
+        var calculations = await connection.ExecuteAsync(
             new CommandDefinition(
                 sqlQuery,
                 sqlQueryParams,
