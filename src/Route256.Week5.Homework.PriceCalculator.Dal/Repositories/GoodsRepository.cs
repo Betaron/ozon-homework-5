@@ -40,6 +40,27 @@ returning id;
             .ToArray();
     }
 
+    public async Task Delete(long[] ids, CancellationToken token)
+    {
+        const string sqlQuery = @"
+delete
+  from goods
+ where id in (select unnest(@GoodsIds))
+";
+
+        var sqlQueryParams = new
+        {
+            GoodsIds = ids
+        };
+
+        await using var connection = await GetAndOpenConnection();
+        var calculations = await connection.ExecuteAsync(
+            new CommandDefinition(
+                sqlQuery,
+                sqlQueryParams,
+                cancellationToken: token));
+    }
+
     public async Task<GoodEntityV1[]> Query(
         long userId,
         CancellationToken token)

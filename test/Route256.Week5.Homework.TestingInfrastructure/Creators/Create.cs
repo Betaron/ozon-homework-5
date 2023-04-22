@@ -7,6 +7,16 @@ public static class Create
 
     public static long RandomId() => Interlocked.Increment(ref _counter);
 
+    public static long[] RandomId(int count)
+    {
+        var ids = new long[count];
+        for (int i = 0; i < count; i++)
+        {
+            ids[i] = RandomId();
+        }
+        return ids;
+    }
+
     public static double RandomDouble() => StaticRandom.NextDouble();
 
     public static decimal RandomDecimal() => (decimal)StaticRandom.NextDouble();

@@ -19,10 +19,12 @@ public class CalculationsRepositoryTests
     private readonly TimeSpan _requiredDateTimePrecision = TimeSpan.FromMilliseconds(100);
 
     private readonly ICalculationRepository _calculationRepository;
+    private readonly IGoodsRepository _goodsRepository;
 
     public CalculationsRepositoryTests(TestFixture fixture)
     {
         _calculationRepository = fixture.CalculationRepository;
+        _goodsRepository = fixture.GoodsRepository;
     }
 
     [Theory]
@@ -172,5 +174,151 @@ public class CalculationsRepositoryTests
 
         // Assert
         foundCalculations.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Query_CalculationsIdsModels_SelectByUserId_Success()
+    {
+        // Arrange
+        var userId = Create.RandomId();
+        var anotherUserId = Create.RandomId();
+        var now = DateTimeOffset.UtcNow;
+
+        var calculations = CalculationEntityV1Faker.Generate(5)
+            .Select(x => x.WithUserId(userId)
+                .WithAt(now))
+            .ToArray();
+
+        var anotherCalculations = CalculationEntityV1Faker.Generate(3)
+            .Select(x => x.WithAt(now))
+            .ToArray();
+
+        var calculationIds = (await _calculationRepository.Add(calculations, default))
+            .ToHashSet();
+
+        await _calculationRepository.Add(anotherCalculations, default);
+
+        // Act
+        var foundCalculations = await _calculationRepository.QueryIds(
+            userId,
+            default);
+
+        // Assert
+        foundCalculations.Should().NotBeEmpty();
+        foundCalculations.Should().OnlyContain(x => x.UserId == userId);
+        foundCalculations.Should().OnlyContain(x => calculationIds.Contains(x.Id));
+    }
+
+    [Fact]
+    public async Task Query_CalculationsIdsModels_SelectByCalculationIds_Success()
+    {
+        // Arrange
+        var userId = Create.RandomId();
+        var anotherUserId = Create.RandomId();
+        var now = DateTimeOffset.UtcNow;
+
+        var calculations = CalculationEntityV1Faker.Generate(5)
+            .Select(x => x.WithUserId(userId)
+                .WithAt(now))
+            .ToArray();
+
+        var anotherCalculations = CalculationEntityV1Faker.Generate(2)
+            .Select(x => x.WithAt(now))
+            .ToArray();
+
+        var calculationIds = (await _calculationRepository.Add(calculations, default))
+            .ToHashSet().Take(3).ToArray();
+
+        await _calculationRepository.Add(anotherCalculations, default);
+
+        // Act
+        var foundCalculations = await _calculationRepository.QueryIds(
+            calculationIds,
+            default);
+
+        // Assert
+        foundCalculations.Should().NotBeEmpty();
+        foundCalculations.Should().OnlyContain(x => x.UserId == userId);
+        foundCalculations.Should().OnlyContain(x => calculationIds.Contains(x.Id));
+    }
+
+    [Fact]
+    public async Task Delete_Calculations_Success()
+    {
+        // Arrange
+        var userId = Create.RandomId();
+        var now = DateTimeOffset.UtcNow;
+
+        var calculations = CalculationEntityV1Faker.Generate(3)
+            .Select(x => x.WithUserId(userId)
+                .WithAt(now))
+            .ToArray();
+
+        var calculationIds = (await _calculationRepository.Add(calculations, default))
+            .ToHashSet().Take(2).ToArray();
+
+        // Act
+        await _calculationRepository.Delete(
+            calculationIds,
+            default);
+
+        // Assert
+        var foundCalculations = await _calculationRepository.QueryIds(
+        userId,
+        default);
+
+        foundCalculations.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task DeleteCascade_Calculations_Success()
+    {
+        // Arrange
+        var userId = Create.RandomId();
+        var now = DateTimeOffset.UtcNow;
+
+        var goods = GoodEntityV1Faker.Generate(3)
+            .Select(x => x
+                .WithUserId(userId))
+            .ToArray();
+
+        var calculations = CalculationEntityV1Faker.Generate(3)
+            .Select(x => x.WithUserId(userId)
+                .WithAt(now))
+            .ToArray();
+
+        var calculationIds = (await _calculationRepository.Add(calculations, default))
+            .ToHashSet().Take(2).ToArray();
+        var goodsIds = (await _goodsRepository.Add(goods, default))
+            .ToHashSet().Take(2).ToArray();
+
+        var length = calculationIds.Length;
+        var calculationIdsModels = new CalculationIdsModel[length];
+        for (int i = 0; i < length; i++)
+        {
+            calculationIdsModels[i] = new CalculationIdsModel()
+            {
+                Id = calculationIds[i],
+                UserId = userId,
+                GoodIds = new long[] { goodsIds[i] }
+            };
+        }
+
+        // Act
+        await _calculationRepository.DeleteCascade(
+            calculationIdsModels,
+            default);
+
+        // Assert
+        var foundCalculations = await _calculationRepository.QueryIds(
+        userId,
+        default);
+
+        var foundGoods = await _goodsRepository.Query(
+        userId,
+        default);
+
+        foundCalculations.Should().HaveCount(1);
+        foundGoods.Should().HaveCount(1);
     }
 }

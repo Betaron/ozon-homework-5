@@ -111,4 +111,27 @@ public class GoodsRepositoryTests
         // Assert
         foundGoods.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task Delete_Goods_Success()
+    {
+        // Arrange
+        var userId = Create.RandomId();
+
+        var goods = GoodEntityV1Faker.Generate(3)
+            .Select(x => x.WithUserId(userId))
+        .ToArray();
+
+        var goodsIds = await _goodsRepository.Add(goods, default);
+
+        // Act
+        await _goodsRepository.Delete(
+            goodsIds.Take(2).ToArray(),
+            default);
+
+        // Assert
+        var foundGoods = await _goodsRepository.Query(userId, default);
+
+        foundGoods.Length.Should().Be(1);
+    }
 }

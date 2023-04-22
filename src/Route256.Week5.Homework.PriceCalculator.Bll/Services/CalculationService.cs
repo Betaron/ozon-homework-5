@@ -96,4 +96,61 @@ public class CalculationService : ICalculationService
                 x.GoodIds))
             .ToArray();
     }
+
+    public Task DeleteCalculations(
+        QueryCalculationIdsModel[] idsModels,
+        CancellationToken cancellationToken)
+    {
+        var models = idsModels.Select(x => new CalculationIdsModel()
+        {
+            Id = x.Id,
+            UserId = x.UserId,
+            GoodIds = x.GoodIds
+        }).ToArray();
+
+        return _calculationRepository.DeleteCascade(models, cancellationToken);
+    }
+
+    public async Task<QueryCalculationIdsModel[]> QueryCalculationsIds(
+        long[] calculationIds,
+        CancellationToken cancellationToken)
+    {
+        var result = await _calculationRepository.QueryIds(
+            calculationIds,
+            cancellationToken);
+
+        return result
+                .Select(x => new QueryCalculationIdsModel(
+                x.Id,
+                x.UserId,
+                x.GoodIds))
+            .ToArray();
+    }
+
+    public async Task<QueryCalculationIdsModel[]> QueryCalculationsIds(
+       long userId,
+       CancellationToken cancellationToken)
+    {
+        var result = await _calculationRepository.QueryIds(
+            userId,
+            cancellationToken);
+
+        return result
+                .Select(x => new QueryCalculationIdsModel(
+                x.Id,
+                x.UserId,
+                x.GoodIds))
+            .ToArray();
+    }
+
+    public async Task<long[]> CheckCalculationsNonExistence(
+        long[] calculationIds,
+        CancellationToken cancellationToken)
+    {
+        var result = await _calculationRepository.QueryIds(
+            calculationIds,
+            cancellationToken);
+
+        return calculationIds.Except(result.Select(x => x.Id)).ToArray();
+    }
 }

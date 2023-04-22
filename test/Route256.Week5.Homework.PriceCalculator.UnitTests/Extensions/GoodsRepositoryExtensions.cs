@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading;
 using Moq;
 using Route256.Week5.Homework.PriceCalculator.Dal.Entities;
+using Route256.Week5.Homework.PriceCalculator.Dal.Models;
 using Route256.Week5.Homework.PriceCalculator.Dal.Repositories.Interfaces;
 using Route256.Week5.Homework.PriceCalculator.UnitTests.Comparers;
 
@@ -51,6 +52,62 @@ public static class GoodsRepositoryExtensions
         repository.Verify(p =>
                 p.Query(
                     It.Is<long>(x => x == userId),
+                    It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    public static void VerifyQueryIdsWasCalledOnce(
+        this Mock<ICalculationRepository> repository,
+        long userId)
+    {
+        repository.Verify(p =>
+                p.QueryIds(
+                    It.Is<long>(x => x == userId),
+                    It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    public static void VerifyQueryIdsWasCalledOnce(
+        this Mock<ICalculationRepository> repository,
+        long[] calculationIds)
+    {
+        repository.Verify(p =>
+                p.QueryIds(
+                    It.Is<long[]>(x => x.SequenceEqual(calculationIds)),
+                    It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    public static void VerifyDeleteWasCalledOnce(
+        this Mock<ICalculationRepository> repository,
+        long[] calculationIds)
+    {
+        repository.Verify(p =>
+                p.Delete(
+                    It.Is<long[]>(x => x.SequenceEqual(calculationIds)),
+                    It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    public static void VerifyDeleteWasCalledOnce(
+        this Mock<IGoodsRepository> repository,
+        long[] goodsIds)
+    {
+        repository.Verify(p =>
+                p.Delete(
+                    It.Is<long[]>(x => x.SequenceEqual(goodsIds)),
+                    It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    public static void VerifyDeleteCascadeWasCalledOnce(
+        this Mock<ICalculationRepository> repository,
+        CalculationIdsModel[] calculationIdsModels)
+    {
+        repository.Verify(p =>
+                p.DeleteCascade(
+                    It.Is<CalculationIdsModel[]>(x =>
+                        x.SequenceEqual(calculationIdsModels)),
                     It.IsAny<CancellationToken>()),
             Times.Once);
     }

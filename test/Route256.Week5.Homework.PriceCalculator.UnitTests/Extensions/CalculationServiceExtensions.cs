@@ -59,6 +59,42 @@ public static class CalculationServiceExtensions
         return service;
     }
 
+    public static Mock<ICalculationService> SetupQueryCalculationsIdsByCalculationsIds(
+        this Mock<ICalculationService> service,
+        QueryCalculationIdsModel[] model)
+    {
+        service.Setup(p =>
+                p.QueryCalculationsIds(It.IsAny<long[]>(),
+                        It.IsAny<CancellationToken>()))
+            .ReturnsAsync(model);
+
+        return service;
+    }
+
+    public static Mock<ICalculationService> SetupQueryCalculationsIdsByUserId(
+        this Mock<ICalculationService> service,
+        QueryCalculationIdsModel[] model)
+    {
+        service.Setup(p =>
+                p.QueryCalculationsIds(It.IsAny<long>(),
+                        It.IsAny<CancellationToken>()))
+            .ReturnsAsync(model);
+
+        return service;
+    }
+
+    public static Mock<ICalculationService> SetupCheckCalculationsNonExistence(
+        this Mock<ICalculationService> service,
+        long[] model)
+    {
+        service.Setup(p =>
+                p.CheckCalculationsNonExistence(It.IsAny<long[]>(),
+                        It.IsAny<CancellationToken>()))
+            .ReturnsAsync(model);
+
+        return service;
+    }
+
     public static Mock<ICalculationService> VerifySaveCalculationWasCalledOnce(
         this Mock<ICalculationService> service,
         SaveCalculationModel model)
@@ -105,6 +141,19 @@ public static class CalculationServiceExtensions
         service.Verify(p =>
                 p.QueryCalculations(
                     It.Is<QueryCalculationFilter>(x => x == filter),
+                    It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        return service;
+    }
+
+    public static Mock<ICalculationService> VerifyDeleteCalculationsWasCalledOnce(
+        this Mock<ICalculationService> service,
+        QueryCalculationIdsModel[] model)
+    {
+        service.Verify(p =>
+                p.DeleteCalculations(
+                    It.Is<QueryCalculationIdsModel[]>(x => x.SequenceEqual(model)),
                     It.IsAny<CancellationToken>()),
             Times.Once);
 
